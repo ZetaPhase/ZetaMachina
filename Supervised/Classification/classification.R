@@ -27,3 +27,4 @@ femaleRace <- sample(c("Asian", "European", "Latino"),
 female <- data.frame(Hair=femaleHair, Race=femaleRace, Gender="F")
 people <- rbind(male, female)
 model <- naiveBayes(Gender ~ ., data=people)
+filter(people, Hair=="Black", Gender=="M")
