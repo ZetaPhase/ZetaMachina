@@ -32,7 +32,7 @@ training <- people[ind,]
 testing <- people[-ind,]
 model <- naiveBayes(Gender ~ ., data=training)
 tmp <- people %>% filter(Hair=="Black" & Gender=="M")
-groupdf <- people %>% group_by(Gender, Hair) %>% summarise(count=n())
+groupdf <- people %>% group_by(Gender, Hair, Race) %>% summarise(count=n())
 groupdf$Prob=groupdf$count/500
 
 daveNaiveBayes <- function(input, output, data){
