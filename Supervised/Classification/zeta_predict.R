@@ -23,17 +23,24 @@ femaleRace <- sample(c("Asian", "European", "Latino"),
 female <- data.frame(Hair=femaleHair, Race=femaleRace, Gender="F")
 people <- rbind(male, female)
 
+getProb <- function(gender, probdf){
+  result <- probdf[probdf$Gender==gender,]$Prob
+}
+
+v_getProb <- Vectorize(getProb, vectorize.args="gender")
+
 daveNaiveBayes <- function(input, output, data){
-  outputProb <- c()
+  probs <- list()
   cmd_str  <- paste("data %>% group_by(", output, ") %>% summarise(count=n())", sep="")
   outputdf <- eval(parse(text=cmd_str))
   outputdf$Prob=outputdf$count/nrow(data)
-  outputTable <- matrix(unlist(outputdf["Prob"]), ncol=nrow(outputdf), byrow=TRUE)
-  colnames(outputTable) <- unlist(outputdf["Gender"])
-  outputTable <- as.table(outputTable)
-  outputProb <- c(outputProb, outputdf[outputdf$Gender=="M",]$Prob)
-  for (out in output){
-    
+  probs[["Output"]] = outputdf
+  
+  for (in_var in input){
+    cmd_str  <- paste("data %>% group_by(", output, ",", in_var, ") %>% summarise(count=n())", sep="")
+    inputdf <- eval(parse(text=cmd_str))
+    inputdf$Prob=inputdf$count/(nrow(data)*v_getProb(inputdf$Gender, outputdf))
+    probs[[in_var]] = inputdf
   }
   #groupdf <- people %>% group_by(Gender, Hair, Race) %>% summarise(count=n())
   #groupdf$Prob=groupdf$count/500
