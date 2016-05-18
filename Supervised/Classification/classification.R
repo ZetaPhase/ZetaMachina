@@ -30,11 +30,27 @@ female <- data.frame(Hair=femaleHair, Race=femaleRace, Gender="F")
 people <- rbind(male, female)
 training <- people[ind,]
 testing <- people[-ind,]
-model <- naiveBayes(Gender ~ ., data=training)
+#model <- naiveBayes(Gender ~ ., data=training)
+model <- daveNaiveBayes("Gender", c("Race", "Hair"), data=training)
 tmp <- people %>% filter(Hair=="Black" & Gender=="M")
 groupdf <- people %>% group_by(Gender, Hair, Race) %>% summarise(count=n())
 groupdf$Prob=groupdf$count/500
+#prediction <- predict(model, testing)
+prediction <- davePredict(model, testing)
+comparisonTable<- table(prediction, testing[,"Gender"])
 
 daveNaiveBayes <- function(input, output, data){
-  
+  outputProb <- c()
+  cmd_str  <- paste("data %>% group_by(", output, ") %>% summarise(count=n())", sep="")
+  outputdf <- eval(parse(text=cmd_str))
+  outputdf$Prob=outputdf$count/nrow(data)
+  outputTable <- matrix(unlist(outputdf["Prob"]), ncol=nrow(outputdf), byrow=TRUE)
+  colnames(outputTable) <- unlist(outputdf["Gender"])
+  outputTable <- as.table(outputTable)
+  outputProb <- c(outputProb, outputdf[outputdf$Gender=="M",]$Prob)
+  for (out in output){
+    
+  }
+  #groupdf <- people %>% group_by(Gender, Hair, Race) %>% summarise(count=n())
+  #groupdf$Prob=groupdf$count/500
 }
