@@ -1,5 +1,5 @@
 # ZetaMachina
-ZetaMachina is a simple R-Based Machine Learning Tutorial.
+ZetaMachina is a simple R-Based Machine Learning Tool also using R Shiny for web developmenet
 
 #### Machine Learning Tutorial in R
 
