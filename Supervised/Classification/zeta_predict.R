@@ -29,7 +29,7 @@ getProb <- function(gender, probdf){
 
 v_getProb <- Vectorize(getProb, vectorize.args="gender")
 
-daveNaiveBayes <- function(input, output, data){
+zetaNaiveBayes <- function(input, output, data){
   probs <- list()
   cmd_str  <- paste("data %>% group_by(", output, ") %>% summarise(count=n())", sep="")
   outputdf <- eval(parse(text=cmd_str))
