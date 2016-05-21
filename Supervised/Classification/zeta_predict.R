@@ -27,14 +27,13 @@ getProb <- function(gender, probdf){
   result <- probdf[probdf$Gender==gender,]$Prob
 }
 
-v_getProb <- Vectorize(getProb, vectorize.args="gender")
-
 zetaNaiveBayes <- function(input, output, data){
   probs <- list()
   cmd_str  <- paste("data %>% group_by(", output, ") %>% summarise(count=n())", sep="")
   outputdf <- eval(parse(text=cmd_str))
   outputdf$Prob=outputdf$count/nrow(data)
   probs[["Output"]] = outputdf
+  v_getProb <- Vectorize(getProb, vectorize.args="gender")
   
   for (in_var in input){
     cmd_str  <- paste("data %>% group_by(", output, ",", in_var, ") %>% summarise(count=n())", sep="")
