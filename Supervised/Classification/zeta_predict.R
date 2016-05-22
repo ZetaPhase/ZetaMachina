@@ -41,6 +41,31 @@ zetaNaiveBayes <- function(input, output, data){
     inputdf$Prob=inputdf$count/(nrow(data)*v_getProb(inputdf$Gender, outputdf))
     probs[[in_var]] = inputdf
   }
-  #groupdf <- people %>% group_by(Gender, Hair, Race) %>% summarise(count=n())
-  #groupdf$Prob=groupdf$count/500
+  
+  return(probs)
+}
+
+zetaPredict <- function(model, testing){
+  output <- model[["Output"]]
+  tmp <- c()
+  inputNames <- names(model)[-1]
+  notOutputNames <- c(inputNames, "count", "Prob")
+  result <- c()
+  for (i in 1:nrow(people)){
+    person <- people[i,]
+    person <- person[names(person) %in% inputNames]
+    probList <- list()
+    for (j in 1:length(person)){
+      cmd_str <- paste("model[[names(person[j])]] %>% filter(",names(person[j]), "=='", person[[j]], "')", sep="")
+      allProb <- eval(parse(text=cmd_str))
+      for (h in 1:nrow(allProb)){
+        prob <- allProb[h,]
+        if ((names(prob[!(names(prob) %in% notOutputNames)]) %in% names(probList))==FALSE){
+          probList[toString(unlist(prob[1]))] = c(allProb$Prob[allProb[[names(prob[!(names(prob) %in% notOutputNames)])]]==unlist(prob[1])])
+        } else {
+          probList[[toString(unlist(prob[1]))]] = c(probList[[toString(unlist(prob[1]))]], allProb$Prob[allProb[[names(prob[!(names(prob) %in% notOutputNames)])]]==unlist(prob[1])])
+        }
+      }
+    }
+  }
 }
