@@ -1,28 +1,5 @@
 library(e1071)
 library(dplyr)
-peopleCount <- 500
-hairColor <- sapply(list("Bronze", "Black", "Red", "Brown"), length)
-race <- sapply(list("Asian", "European", "Latino"), length)
-maleHair <- sample(c("Bronze", "Black", "Red", "Brown"),
-                   size = peopleCount,
-                   prob = rep(c(0.3, 0.1, 0.2, 0.4) / hairColor, hairColor),
-                   replace = TRUE)
-maleRace <- sample(c("Asian", "European", "Latino"),
-                   size = peopleCount,
-                   prob = rep(c(0.3, 0.6, 0.1) / race, race),
-                   replace = TRUE)
-male <- data.frame(Hair=maleHair, Race=maleRace, Gender="M")
-femaleHair <- sample(c("Bronze", "Black", "Red", "Brown"),
-                     size = peopleCount,
-                     prob = rep(c(0.05, 0.5, 0.3, 0.15) / hairColor, hairColor),
-                     replace = TRUE)
-femaleRace <- sample(c("Asian", "European", "Latino"),
-                     size = peopleCount,
-                     prob = rep(c(0.2, 0.1, 0.7) / race, race),
-                     replace = TRUE)
-female <- data.frame(Hair=femaleHair, Race=femaleRace, Gender="F")
-people <- rbind(male, female)
-
 getProb <- function(gender, probdf){
   result <- probdf[probdf$Gender==gender,]$Prob
 }
@@ -44,6 +21,7 @@ zetaNaiveBayes <- function(input, output, data){
   
   return(probs)
 }
+
 
 zetaPredict <- function(model, testing){
   outputProbability <- model[["Output"]]
@@ -81,3 +59,32 @@ zetaPredict <- function(model, testing){
   }
   return(result)
 }
+
+#Main
+peopleCount <- 500
+hairColor <- sapply(list("Bronze", "Black", "Red", "Brown"), length)
+race <- sapply(list("Asian", "European", "Latino"), length)
+maleHair <- sample(c("Bronze", "Black", "Red", "Brown"),
+                   size = peopleCount,
+                   prob = rep(c(0.3, 0.1, 0.2, 0.4) / hairColor, hairColor),
+                   replace = TRUE)
+maleRace <- sample(c("Asian", "European", "Latino"),
+                   size = peopleCount,
+                   prob = rep(c(0.3, 0.6, 0.1) / race, race),
+                   replace = TRUE)
+male <- data.frame(Hair=maleHair, Race=maleRace, Gender="M")
+femaleHair <- sample(c("Bronze", "Black", "Red", "Brown"),
+                     size = peopleCount,
+                     prob = rep(c(0.05, 0.5, 0.3, 0.15) / hairColor, hairColor),
+                     replace = TRUE)
+femaleRace <- sample(c("Asian", "European", "Latino"),
+                     size = peopleCount,
+                     prob = rep(c(0.2, 0.1, 0.7) / race, race),
+                     replace = TRUE)
+female <- data.frame(Hair=femaleHair, Race=femaleRace, Gender="F")
+people <- rbind(male, female)
+model <- zetaNaiveBayes(c("Hair", "Race"), "Gender", people)
+count <- 1:1000
+ind <- sample(count, 800, replace=FALSE)
+training <- people[ind,]
+testing <- people[-ind,]
