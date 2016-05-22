@@ -83,8 +83,13 @@ femaleRace <- sample(c("Asian", "European", "Latino"),
                      replace = TRUE)
 female <- data.frame(Hair=femaleHair, Race=femaleRace, Gender="F")
 people <- rbind(male, female)
-model <- zetaNaiveBayes(c("Hair", "Race"), "Gender", people)
 count <- 1:1000
 ind <- sample(count, 800, replace=FALSE)
 training <- people[ind,]
 testing <- people[-ind,]
+model <- zetaNaiveBayes(c("Hair", "Race"), "Gender", training)
+prediction <- zetaPredict(model, testing)
+prediction <- factor(prediction, levels=c("M", "F"))
+model2 <- naiveBayes(Gender ~ ., data=training)
+prediction2 <- predict(model2, testing)
+table(prediction, prediction2)

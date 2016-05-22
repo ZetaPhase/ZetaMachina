@@ -30,12 +30,12 @@ female <- data.frame(Hair=femaleHair, Race=femaleRace, Gender="F")
 people <- rbind(male, female)
 training <- people[ind,]
 testing <- people[-ind,]
-#model <- naiveBayes(Gender ~ ., data=training)
+#model2 <- naiveBayes(Gender ~ ., data=training)
 model <- daveNaiveBayes("Gender", c("Race", "Hair"), data=training)
 tmp <- people %>% filter(Hair=="Black" & Gender=="M")
 groupdf <- people %>% group_by(Gender, Hair, Race) %>% summarise(count=n())
 groupdf$Prob=groupdf$count/500
-#prediction <- predict(model, testing)
+#prediction2 <- predict(model2, testing)
 prediction <- davePredict(model, testing)
 comparisonTable<- table(prediction, testing[,"Gender"])
 
